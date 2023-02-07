@@ -1,0 +1,19 @@
+version: "3.9"
+
+networks:
+  default:
+    name: atmosphere
+
+services:
+
+  database_mysql:
+    image: mysql:8.0
+    container_name: atmosphere_database_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: atmosphere
+      MYSQL_DATABASE: atmosphere
+      MYSQL_USER: atmosphere
+      MYSQL_PASSWORD: atmosphere
+    networks:
+      - default
