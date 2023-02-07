@@ -1,0 +1,6 @@
+[submodule "Framework"]
+	path = Framework
+	url = git@github.com:atmosphere-php/Framework.git
+[submodule "Atmosphere"]
+	path = Atmosphere
+	url = git@github.com:atmosphere-php/Atmosphere.git
