@@ -1,0 +1,20 @@
+{
+    "name": "atmospherephp/development",
+    "description": "Development environment of the atmosphere framework.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Romano Schoonheim",
+            "email": "support@atmosphere.sh"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Atmosphere\\Development\\": "Development/"
+        }
+    },
+    "require": {
+        "symfony/console": "^6.2"
+    }
+}

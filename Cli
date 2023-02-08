@@ -11,83 +11,15 @@
  * @author Romano Schoonheim <support@atmosphere.sh>
  */
 
-// Parse command line arguments.
-class Input
-{
+use Symfony\Component\Console\Application;
+use Atmosphere\Development\Commands\Quality\CsStyleFixerCommand;
+use Atmosphere\Development\Commands\Framework\Generate\CreateFrameworkModule;
 
-    public $args    = [];
+require __DIR__ . '/vendor/autoload.php';
 
-    public $command = null;
+$console = new Application('Atmosphere', '1.0.0');
 
-    public $options = [];
+$console->add(new CreateFrameworkModule());
+$console->add(new CsStyleFixerCommand());
 
-    public function __construct()
-    {
-        $this->args = $_SERVER['argv'];
-
-        if ($_SERVER['argc'] >= 1) {
-            $this->command = $this->args[1];
-            $this->options = array_slice($this->args, 2);
-        }
-    }
-
-    public function getOptions(): array
-    {
-        $options = [];
-        foreach ($this->options as $option) {
-            $option = explode('=', $option);
-            $options[str_replace('--', '', $option[0])] = $option[1];
-        }
-
-        return $options;
-    }
-
-}
-
-$input = new Input();
-
-// Define commands.
-$commands = [
-    'module' => [
-        'description' => 'Create a new module.',
-        'options' => [
-            'name' => [
-                'description' => 'The name of the module.',
-                'required' => true,
-            ],
-        ],
-        'callback' => static function (Input $input): void {
-
-            $path = __DIR__.'/Framework/src/' . ucfirst(strtolower($input->getOptions()['name']));
-
-            // Check if the module already exists.
-            if (is_dir($path)) {
-                echo "Module already exists.".PHP_EOL;
-                exit;
-            }
-
-            // Create the module directory.
-            if ( ! mkdir($path, 0777, true) && ! is_dir($path)) {
-                throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
-            }
-
-            // Add .gitkeep file.
-            file_put_contents($path.'/.gitkeep', '');
-        },
-    ],
-];
-
-// Check if the command exists.
-if ( ! isset($commands[$input->command])) {
-    echo "Command not found. Available commands:".PHP_EOL;
-    foreach ($commands as $command => $data) {
-        echo " - $command: {$data['description']}".PHP_EOL;
-    }
-    exit;
-}
-
-$command = $commands[$input->command];
-
-$command['callback']($input);
-
-
+$console->run();
