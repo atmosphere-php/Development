@@ -1,0 +1,93 @@
+#!/bin/php
+<?php
+
+/**
+ * Simple development CLI for Atmosphere.
+ *
+ * This script is used to automate common tasks during development. The goal is
+ * to make it easy to create new projects, add new modules, etc. The code quality
+ * of this script is extremely low, but it's not meant to be used in production.
+ *
+ * @author Romano Schoonheim <support@atmosphere.sh>
+ */
+
+// Parse command line arguments.
+class Input
+{
+
+    public $args    = [];
+
+    public $command = null;
+
+    public $options = [];
+
+    public function __construct()
+    {
+        $this->args = $_SERVER['argv'];
+
+        if ($_SERVER['argc'] >= 1) {
+            $this->command = $this->args[1];
+            $this->options = array_slice($this->args, 2);
+        }
+    }
+
+    public function getOptions(): array
+    {
+        $options = [];
+        foreach ($this->options as $option) {
+            $option = explode('=', $option);
+            $options[str_replace('--', '', $option[0])] = $option[1];
+        }
+
+        return $options;
+    }
+
+}
+
+$input = new Input();
+
+// Define commands.
+$commands = [
+    'module' => [
+        'description' => 'Create a new module.',
+        'options' => [
+            'name' => [
+                'description' => 'The name of the module.',
+                'required' => true,
+            ],
+        ],
+        'callback' => static function (Input $input): void {
+
+            $path = __DIR__.'/Framework/src/' . ucfirst(strtolower($input->getOptions()['name']));
+
+            // Check if the module already exists.
+            if (is_dir($path)) {
+                echo "Module already exists.".PHP_EOL;
+                exit;
+            }
+
+            // Create the module directory.
+            if ( ! mkdir($path, 0777, true) && ! is_dir($path)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+            }
+
+            // Add .gitkeep file.
+            file_put_contents($path.'/.gitkeep', '');
+        },
+    ],
+];
+
+// Check if the command exists.
+if ( ! isset($commands[$input->command])) {
+    echo "Command not found. Available commands:".PHP_EOL;
+    foreach ($commands as $command => $data) {
+        echo " - $command: {$data['description']}".PHP_EOL;
+    }
+    exit;
+}
+
+$command = $commands[$input->command];
+
+$command['callback']($input);
+
+
