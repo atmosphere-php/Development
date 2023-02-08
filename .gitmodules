@@ -4,3 +4,6 @@
 [submodule "Atmosphere"]
 	path = Atmosphere
 	url = git@github.com:atmosphere-php/Atmosphere.git
+[submodule "Website"]
+	path = Website
+	url = git@github.com:atmosphere-php/Website.git
